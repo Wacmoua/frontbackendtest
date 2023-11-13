@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <title>Page des Posts</title>
+  </head>
+  <body>
+    <!-- Contenu de la page ici -->
+    <div id="post.models" class="container mt-5">
+      <div class="row">
+        <div class="col-md-8 offset-md-2">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-text">Contenu du post...</p>
+              <p class="card-text">
+                <small class="text-muted">Nom de l'utilisateur</small><br />
+                <small class="text-muted">Date du post</small>
+              </p>
+            </div>
+          </div>
+          <!-- Répétez cette structure pour chaque post dynamiquement -->
+        </div>
+      </div>
+    </div>
+    <script>
+      async function fetchData() {
+        try {
+          const response = await fetch("http://localhost:5000/post");
+          const data = await response.json();
+
+          // Appel de la fonction pour afficher les posts
+          displayPosts(data);
+        } catch (error) {
+          console.error("Erreur lors de la récupération des données:", error);
+        }
+      }
+
+      function displayPosts(posts) {
+        const postContainer = document.getElementById("post.models");
+
+        posts.forEach((post) => {
+          const postElement = document.createElement("div");
+          postElement.classList.add("col-md-8", "offset-md-2", "mb-3");
+
+          postElement.innerHTML = `
+              <div class="card">
+                <div class="card-body">
+                  
+                  <p class="card-text">${post.message}</p>
+                  <p class="card-text">
+                    <small class="text-muted">${post.author}</small></br>
+                    <small class="text-muted">${post.createdAt}</small>
+                    
+                  </p>
+                </div>
+              </div>
+            `;
+
+          postContainer.appendChild(postElement);
+        });
+      }
+
+      // Appel de la fonction fetchData lors du chargement de la page
+      fetchData();
+    </script>
+  </body>
+</html>
