@@ -10,6 +10,80 @@
     <title>Page des Posts</title>
   </head>
   <body>
+    <ul class="nav nav-tabs" id="myTabs">
+      <li class="nav-item">
+        <a class="nav-link active" id="loginTab" data-toggle="tab" href="#login"
+          >Connexion</a
+        >
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="registerTab" data-toggle="tab" href="#register"
+          >Inscription</a
+        >
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="login">
+        <!-- Contenu du formulaire de connexion -->
+        <form id="loginForm" onsubmit="loginUser(event)" class="container mt-4">
+          <h2>Connexion</h2>
+          <div class="form-group">
+            <label for="loginUsername">Nom d'utilisateur :</label>
+            <input
+              type="text"
+              id="loginUsername"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Mot de passe :</label>
+            <input
+              type="password"
+              id="loginPassword"
+              class="form-control"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Se connecter</button>
+        </form>
+      </div>
+      <div class="tab-pane fade" id="register">
+        <!-- Contenu du formulaire d'inscription -->
+        <form
+          id="registerForm"
+          onsubmit="registerUser(event)"
+          class="container mt-4"
+        >
+          <h2>Inscription</h2>
+          <div class="form-group">
+            <label for="registerUsername">Nom d'utilisateur :</label>
+            <input
+              type="text"
+              id="registerUsername"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Adresse e-mail :</label>
+            <input type="email" id="email" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">Mot de passe :</label>
+            <input
+              type="password"
+              id="registerPassword"
+              class="form-control"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">S'inscrire</button>
+        </form>
+      </div>
+    </div>
+
     <div id="post.models" class="container mt-5">
       <form id="postForm" onsubmit="addPost(event)">
         <div class="form-group">
@@ -22,16 +96,13 @@
         </div>
         <button type="submit" class="btn btn-primary">Poster</button>
       </form>
-    
-              </p>
-            </div>
-          </div>
-          <!-- Répétez cette structure pour chaque post dynamiquement -->
-        </div>
-      </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
-          let posts = [];
+      let posts = [];
       async function fetchData() {
         try {
           const response = await fetch("http://localhost:5000/post");
@@ -113,36 +184,35 @@
       }
 
       async function likePost(postId) {
-  const userId = document.getElementById(`author-${postId}`).value;
+        const userId = document.getElementById(`author-${postId}`).value;
 
-  // Vérifiez si l'utilisateur a fourni un identifiant utilisateur
-  if (!userId) {
-    console.error("Veuillez fournir un identifiant utilisateur.");
-    return;
-  }
+        // Vérifiez si l'utilisateur a fourni un identifiant utilisateur
+        if (!userId) {
+          console.error("Veuillez fournir un identifiant utilisateur.");
+          return;
+        }
 
-  try {
-    const response = await fetch(
-      `http://localhost:5000/post/like-post/${postId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId }), // Envoyez l'identifiant de l'utilisateur dans le corps de la requête
+        try {
+          const response = await fetch(
+            `http://localhost:5000/post/like-post/${postId}`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ userId }), // Envoyez l'identifiant de l'utilisateur dans le corps de la requête
+            }
+          );
+
+          const updatedPost = await response.json();
+          console.log("Post liked:", updatedPost);
+
+          // Mettez à jour votre interface utilisateur en conséquence, par exemple, en réaffichant les posts
+          fetchData();
+        } catch (error) {
+          console.error("Erreur lors du like du post:", error);
+        }
       }
-    );
-
-    const updatedPost = await response.json();
-    console.log("Post liked:", updatedPost);
-
-    // Mettez à jour votre interface utilisateur en conséquence, par exemple, en réaffichant les posts
-    fetchData();
-  } catch (error) {
-    console.error("Erreur lors du like du post:", error);
-  }
-}
-
     </script>
   </body>
 </html>
