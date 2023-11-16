@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- Formulaire d'inscription -->
+    <form
+      id="registerForm"
+      onsubmit="registerUser(event)"
+      class="container mt-4"
+    >
+      <h2>Inscription</h2>
+      <div class="form-group">
+        <label for="registerUsername">Nom d'utilisateur :</label>
+        <input
+          type="text"
+          id="registerUsername"
+          class="form-control"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="registerPassword">Mot de passe :</label>
+        <input
+          type="password"
+          id="registerPassword"
+          class="form-control"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-primary">S'inscrire</button>
+    </form>
+
+    <!-- Formulaire de connexion -->
+    <form id="loginForm" onsubmit="loginUser(event)" class="container mt-4">
+      <h2>Connexion</h2>
+      <div class="form-group">
+        <label for="loginUsername">Nom d'utilisateur :</label>
+        <input type="text" id="loginUsername" class="form-control" required />
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Mot de passe :</label>
+        <input
+          type="password"
+          id="loginPassword"
+          class="form-control"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-primary">Se connecter</button>
+    </form>
+
+    <script>
+      // Fonction pour traiter l'inscription
+      async function registerUser(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("registerUsername").value;
+        const password = document.getElementById("registerPassword").value;
+
+        // Envoyer les données au serveur (vous devrez implémenter cette partie)
+        const response = await fetch("http://localhost:5000/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
+        console.log(data); // Gérer la réponse du serveur comme nécessaire
+      }
+
+      // Fonction pour traiter la connexion
+      async function loginUser(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("loginUsername").value;
+        const password = document.getElementById("loginPassword").value;
+
+        // Envoyer les données au serveur (vous devrez implémenter cette partie)
+        const response = await fetch("http://localhost:5000/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
+        console.log(data); // Gérer la réponse du serveur comme nécessaire
+      }
+    </script>
+  </body>
+</html>
