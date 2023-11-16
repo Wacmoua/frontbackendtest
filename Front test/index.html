@@ -10,17 +10,19 @@
     <title>Page des Posts</title>
   </head>
   <body>
-    <!-- Contenu de la page ici -->
     <div id="post.models" class="container mt-5">
-      <div class="row">
-        <div class="col-md-8 offset-md-2">
-          <div class="card">
-            <div class="card-body">
-              <p class="card-text">Contenu du post...</p>
-              <p class="card-text">
-                <small class="text-muted">Nom de l'utilisateur</small><br />
-                <small class="text-muted">Date du post</small>
-                <small class="text-muted">Likers</small>
+      <form id="postForm" onsubmit="addPost(event)">
+        <div class="form-group">
+          <label for="message">Message</label>
+          <input type="text" class="form-control" id="message" required />
+        </div>
+        <div class="form-group">
+          <label for="author">Nom de l'utilisateur</label>
+          <input type="text" class="form-control" id="author" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Poster</button>
+      </form>
+    
               </p>
             </div>
           </div>
@@ -29,9 +31,11 @@
       </div>
     </div>
     <script>
+          let posts = [];
       async function fetchData() {
         try {
           const response = await fetch("http://localhost:5000/post");
+          console.log("API Response:", response);
           const data = await response.json();
 
           // Appel de la fonction pour afficher les posts
@@ -44,24 +48,28 @@
       function displayPosts(posts) {
         const postContainer = document.getElementById("post.models");
 
+        posts = posts.reverse();
+
         posts.forEach((post) => {
           const postElement = document.createElement("div");
           postElement.classList.add("col-md-8", "offset-md-2", "mb-3");
 
           postElement.innerHTML = `
-              <div class="card">
-                <div class="card-body">
-                  
-                  <p class="card-text">${post.message}</p>
-                  <p class="card-text">
-                    <small class="text-muted">${post.author}</small></br>
-                    <small class="text-muted">${post.createdAt}</small></br>
-                    <small class="text-muted">${post.likers}</small>
-                    
-                  </p>
-                </div>
-              </div>
-            `;
+          <div class="card">
+            <div class="card-body">
+              
+              <p class="card-text">${post.message}</p>
+              <p class="card-text">
+                <small class="text-muted">${post.author}</small></br>
+                <small class="text-muted">${post.createdAt}</small></br>
+                <small class="text-muted">${post.likers}</small>
+                
+              </p>
+              <button class="btn btn-primary" onclick="likePost('${post._id}')">Like</button>
+              <input type="text" id="author-${post._id}" placeholder="Votre prenom" />
+            </div>
+          </div>
+        `;
 
           postContainer.appendChild(postElement);
         });
@@ -69,6 +77,72 @@
 
       // Appel de la fonction fetchData lors du chargement de la page
       fetchData();
+
+      async function addPost(event) {
+        event.preventDefault();
+
+        const messageInput = document.getElementById("message");
+        const authorInput = document.getElementById("author");
+
+        const message = messageInput.value;
+        const author = authorInput.value;
+
+        try {
+          const response = await fetch("http://localhost:5000/post", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message,
+              author,
+            }),
+          });
+
+          const newPost = await response.json();
+
+          // Ajouter le nouveau post à l'affichage
+          posts.unshift(newPost); // Ajoutez le nouveau post au début du tableau
+
+          // Effacer les champs du formulaire
+          messageInput.value = "";
+          authorInput.value = "";
+        } catch (error) {
+          console.error("Erreur lors de l'ajout du post:", error);
+        }
+      }
+
+      async function likePost(postId) {
+  const userId = document.getElementById(`author-${postId}`).value;
+
+  // Vérifiez si l'utilisateur a fourni un identifiant utilisateur
+  if (!userId) {
+    console.error("Veuillez fournir un identifiant utilisateur.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:5000/post/like-post/${postId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }), // Envoyez l'identifiant de l'utilisateur dans le corps de la requête
+      }
+    );
+
+    const updatedPost = await response.json();
+    console.log("Post liked:", updatedPost);
+
+    // Mettez à jour votre interface utilisateur en conséquence, par exemple, en réaffichant les posts
+    fetchData();
+  } catch (error) {
+    console.error("Erreur lors du like du post:", error);
+  }
+}
+
     </script>
   </body>
 </html>
